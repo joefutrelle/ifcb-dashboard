@@ -10,12 +10,12 @@ Vagrant.configure("2") do |config|
 sudo apt-get update
 
 # utilities
-sudo apt-get install -y aptitude emacs24-nox git curl python-pip
+sudo apt-get install -y aptitude emacs24-nox git curl python-pip python-dev
 
 # apache, flask, wsgi
 sudo apt-get install -y apache2 python-flask libapache2-mod-wsgi
-sudo apt-get install -y python-flask python-flask-login python-flaskext.wtf python-bcrypt
-sudo pip install flask-user flask-restless mimerender
+sudo apt-get install -y python-flask python-flask-login
+sudo pip install flask-user flask-restless
 
 # various python incl numpy/scipy
 sudo apt-get install -y python-lxml python-imaging
