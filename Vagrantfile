@@ -8,12 +8,14 @@ Vagrant.configure("2") do |config|
   config.vm.network :forwarded_port, host: 5433, guest: 5432
   config.vm.provision :shell, inline: <<-SHELL
 sudo apt-get update
+
+# utilities
 sudo apt-get install -y aptitude emacs24-nox git curl python-pip
 
 # apache, flask, wsgi
 sudo apt-get install -y apache2 python-flask libapache2-mod-wsgi
-sudo apt-get install -y python-flask
-sudo pip install flask-user flask-restless
+sudo apt-get install -y python-flask python-flask-login python-flaskext.wtf python-bcrypt
+sudo pip install flask-user flask-restless mimerender
 
 # various python incl numpy/scipy
 sudo apt-get install -y python-lxml python-imaging
@@ -37,3 +39,4 @@ sudo service postgresql restart
 
 SHELL
 end
+
