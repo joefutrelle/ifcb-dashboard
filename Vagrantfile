@@ -37,6 +37,17 @@ sudo echo "host workflow ifcb 10.0.2.2/16 md5" >> /etc/postgresql/9.3/main/pg_hb
 # restart postgres
 sudo service postgresql restart
 
+# configure apache and dashboard
+sudo -s <<EOF
+echo "Listen 9270" >> /etc/apache2/ports.conf
+echo "Listen 8888" >> /etc/apache2/ports.conf
+EOF
+cd /vagrant
+sudo cp dashboard_site.conf workflow_site.conf /etc/apache2/sites-available
+sudo a2ensite dashboard_site
+sudo a2ensite workflow_site
+sudo service apache2 restart
+
 SHELL
 end
 
