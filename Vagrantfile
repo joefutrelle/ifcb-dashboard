@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
 sudo apt-get update
 
 # utilities
-sudo apt-get install -y aptitude emacs24-nox git curl python-pip python-dev
+sudo apt-get install -y aptitude emacs24-nox git curl python-pip python-dev cifs-utils
 
 # apache, flask, wsgi
 sudo apt-get install -y apache2 python-flask libapache2-mod-wsgi
@@ -21,8 +21,8 @@ sudo pip install flask-user flask-restless
 sudo apt-get install -y python-lxml python-imaging
 sudo apt-get install -y python-numpy python-scipy python-skimage python-sklearn
 
-# rabbit / celery
-sudo apt-get install -y rabbitmq-server python-celery
+# rabbit / celery / supervisor
+sudo apt-get install -y rabbitmq-server python-celery supervisor
 sudo apt-get remove -y python-librabbitmq
 
 # postgres 9.3
@@ -47,6 +47,10 @@ sudo cp dashboard_site.conf workflow_site.conf /etc/apache2/sites-available
 sudo a2ensite dashboard_site
 sudo a2ensite workflow_site
 sudo service apache2 restart
+
+# configure dashboard workers
+sudo cp /vagrant/dashboard_workers.conf /etc/supervisor/conf.d
+sudo service supervisor restart
 
 SHELL
 end
