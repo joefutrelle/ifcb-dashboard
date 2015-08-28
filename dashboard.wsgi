@@ -6,8 +6,6 @@ from dashboard_conf import DASHBOARD_BASE_URL, DASHBOARD_DATABASE_URL, WORKFLOW_
 
 from oii.ifcb2.dashboard.app import app as application
 
-print application.config
-
 application.config.update(
   DASHBOARD_BASE_URL=DASHBOARD_BASE_URL,
   DATABASE_URL=DASHBOARD_DATABASE_URL,
