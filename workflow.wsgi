@@ -2,9 +2,11 @@ import sys
 
 sys.path.insert(0,'/vagrant')
 
+from dashboard_conf import ASYNC_CONFIG_MODULE, WORKFLOW_DATABASE_URL
+
 from oii.workflow.app import app as application
 
 application.config.update(
-  ASYNC_CONFIG_MODULE='oii.workflow.async_config',
-  DATABASE_URL='postgresql://ifcb:ifcb@localhost/workflow'
+  ASYNC_CONFIG_MODULE=ASYNC_CONFIG_MODULE,
+  DATABASE_URL=WORKFLOW_DATABASE_URL
 )
