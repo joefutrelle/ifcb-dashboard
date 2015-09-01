@@ -3,19 +3,18 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.memory="2048"
   end
-  config.vm.network :forwarded_port, host: 80, guest: 80
   config.vm.network :forwarded_port, host: 8888, guest: 8888
   config.vm.network :forwarded_port, host: 5433, guest: 5432
   config.vm.provision :shell, inline: <<-SHELL
 sudo apt-get update
 
 # utilities
-sudo apt-get install -y aptitude emacs24-nox git curl python-pip python-dev cifs-utils
+sudo apt-get install -y aptitude emacs24-nox git curl python-pip python-dev cifs-utils libffi-dev
 
 # apache, flask, wsgi
 sudo apt-get install -y apache2 python-flask libapache2-mod-wsgi
 sudo apt-get install -y python-flask python-flask-login
-sudo pip install flask-user flask-restless
+sudo pip install flask-user flask-restless flask-wtf mimerender bcrypt
 
 # various python incl numpy/scipy
 sudo apt-get install -y python-lxml python-imaging
