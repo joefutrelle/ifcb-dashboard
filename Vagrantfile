@@ -26,6 +26,7 @@ sudo apt-get remove -y python-librabbitmq
 
 # postgres 9.3
 sudo apt-get install -y postgresql-9.3 postgresql-contrib-9.3 python-psycopg2 python-sqlalchemy
+sudo apt-get install -y alembic
 sudo -u postgres createuser ifcb
 sudo -u postgres createdb -O ifcb ifcb
 sudo -u postgres createdb -O ifcb workflow
