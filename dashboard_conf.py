@@ -1,5 +1,0 @@
-DASHBOARD_BASE_URL='http://localhost:8888/'
-DASHBOARD_DATABASE_URL='postgresql://ifcb:ifcb@localhost/ifcb'
-WORKFLOW_DATABASE_URL='postgresql://ifcb:ifcb@localhost/workflow'
-WORKFLOW_URL='http://localhost:9270'
-ASYNC_CONFIG_MODULE='oii.workflow.async_config'
