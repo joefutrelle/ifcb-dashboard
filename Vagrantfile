@@ -4,7 +4,6 @@ Vagrant.configure("2") do |config|
     vb.memory="2048"
   end
   config.vm.network :forwarded_port, host: 8888, guest: 8888
-  config.vm.network :forwarded_port, host: 5433, guest: 5432
   config.vm.provision :shell, inline: <<-SHELL
 sudo apt-get update
 
