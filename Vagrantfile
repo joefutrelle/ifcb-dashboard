@@ -53,5 +53,6 @@ sudo cp /vagrant/dashboard_workers.conf /etc/supervisor/conf.d
 sudo service supervisor restart
 
 SHELL
+config.vm.provision :shell, :inline => "sudo supervisorctl restart all", run: "always"
 end
 
