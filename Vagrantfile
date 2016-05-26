@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
 sudo apt-get update
 
 # utilities
-sudo apt-get install -y aptitude emacs24-nox git curl python-pip python-dev cifs-utils libffi-dev
+sudo apt-get install -y aptitude git curl python-pip python-dev cifs-utils smbclient libffi-dev
 
 # apache, flask, wsgi
 sudo apt-get install -y apache2 python-flask libapache2-mod-wsgi
