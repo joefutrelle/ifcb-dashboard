@@ -34,11 +34,11 @@ dialog --title "Share configuration" --clear --inputbox "Name or IP address of $
 test_retval
 sharehost=$(cat .sharehost)
 
-dialog --title "Share configuration" --clear --inputbox "Username to connect to share" $HEIGHT $WIDTH 2>.shareuser
+dialog --title "Share configuration" --clear --inputbox "Username to connect to $HOST_DESCRIPTION" $HEIGHT $WIDTH 2>.shareuser
 test_retval
 shareuser=$(cat .shareuser)
 
-dialog --title "Share configuration" --clear --inputbox "Password to connect to share" $HEIGHT $WIDTH 2>.sharepwd
+dialog --title "Share configuration" --clear --inputbox "Password to connect to $HOST_DESCRIPTION" $HEIGHT $WIDTH 2>.sharepwd
 test_retval
 sharepwd=$(cat .sharepwd)
 
