@@ -5,26 +5,70 @@ if [[ $(id -u) -ne 0 ]] ; then
     exec sudo bash $0 $1
 fi
 
-function test_retval {
-    if (($? > 0)); then
-	echo "Canceled"
-	exit 1
-    fi
-}
-
 HEIGHT=10
 WIDTH=50
 
+function cancel {
+    dialog --infobox "Canceled." $HEIGHT $WIDTH
+    exit 1
+}
+
+function test_retval {
+    if (($? > 0)); then
+	cancel
+    fi
+}
+
 sharehost=""
 
-if [[ $1 = "ifcb" ]]; then
+MARKER_REGEX='IFCB dashboard .* mount'
+HOST_DESCRIPTION_IFCB=IFCB
+HOST_DESCRIPTION_SERVER=server
+
+FSTAB=/etc/fstab
+
+grep "\bcifs\b" /etc/fstab | grep -v "$MARKER_REGEX" >.existing_shares
+if [[ $? == 0 ]]; then
+    dialog --yesno "Existing share(s) found. Do you want to keep them?" $HEIGHT $WIDTH
+    if [[ $? == 0 ]]; then
+	while read line; do
+	    sharepath=$(echo $line | awk '{print $1}')
+	    dialog --yes-label "Data" --no-label "IFCB" --yesno "What kind of share is $sharepath?\n\n'Data' means your computer's hard drive\n'IFCB' means your IFCB's hard drive" $HEIGHT $WIDTH
+	    if [[ $? == 0 ]]; then
+		HOST_DESCRIPTION=$HOST_DESCRIPTION_SERVER
+	    else
+		HOST_DESCRIPTION=$HOST_DESCRIPTION_IFCB
+	    fi
+	    MARKER="# IFCB dashboard $HOST_DESCRIPTION mount"
+	    NEW_FSTAB=$(fgrep -v "$line" /etc/fstab)
+	    cp $FSTAB $FSTAB.bak
+	    echo $NEW_FSTAB > $FSTAB
+	    echo "$line $MARKER" >> $FSTAB
+	done < .existing_shares
+    fi
+fi
+
+dialog --yes-label "Computer" --no-label "IFCB" --yesno "What kind of share do you want to configure?" $HEIGHT $WIDTH
+
+if [[ $? == 0 ]]; then
+    HOST_DESCRIPTION=$HOST_DESCRIPTION_SERVER
+else
+    HOST_DESCRIPTION=$HOST_DESCRIPTION_IFCB
+fi
+MARKER="# IFCB dashboard $HOST_DESCRIPTION mount"
+
+fgrep -q "$MARKER" $FSTAB
+if [[ $? == 0 ]]; then
+    dialog --yesno "This will unmount and replace your existing $SHARE_TYPE mount. Do you want to continue?" $HEIGHT $WIDTH
+    if [[ $? != 0 ]]; then cancel; fi
+fi
+
+if [[ $HOST_DESCRIPTION = $HOST_DESCRIPTION_IFCB ]]; then
     CREDENTIALS_FILE=/vagrant/.ifcb_share_credentials
-    HOST_DESCRIPTION=IFCB
     HOST_EXAMPLE=192.168.1.23
     DEFAULT_MOUNT_POINT=/mnt/ifcb
 else
     CREDENTIALS_FILE=/vagrant/.data_share_credentials
-    HOST_DESCRIPTION=server
     HOST_EXAMPLE=myserver.somewhere.edu
     DEFAULT_MOUNT_POINT=/mnt/ifcb_data
 fi
@@ -52,6 +96,8 @@ rm .sharehost .shareuser .sharepwd
 if [[ $HOST_DESCRIPTION = IFCB ]]; then
     share=data
 else
+    dialog --infobox "Connecting to $sharehost ..." $HEIGHT $WIDTH
+
     smbclient -L $sharehost -A $CREDENTIALS_FILE -g 2>/dev/null >.smbclient
 
     if [[ ! $? == 0 ]]; then
@@ -81,8 +127,6 @@ done
 rm .sharemp
 
 # now perform the mount
-
-FSTAB=/etc/fstab
 
 # ensure marker is in fstab
 MARKER="# IFCB dashboard $HOST_DESCRIPTION mount"
