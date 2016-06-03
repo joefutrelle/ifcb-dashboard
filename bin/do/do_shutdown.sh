@@ -1,5 +1,5 @@
 #!/bin/bash
 
-sudo service apache2 stop
-sudo service postgresql stop
-sudo service supervisor stop
+service apache2 stop
+service postgresql stop
+service supervisor stop
