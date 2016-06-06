@@ -59,7 +59,7 @@ MARKER="# IFCB dashboard $HOST_DESCRIPTION mount"
 
 fgrep -q "$MARKER" $FSTAB
 if [[ $? == 0 ]]; then
-    dialog --yesno "This will unmount and replace your existing $SHARE_TYPE mount. Do you want to continue?" $HEIGHT $WIDTH
+    dialog --yesno "This will unmount and replace your existing $HOST_DESCRIPTION mount. Do you want to continue?" $HEIGHT $WIDTH
     if [[ $? != 0 ]]; then cancel; fi
 fi
 
