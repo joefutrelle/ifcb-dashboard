@@ -10,6 +10,7 @@ fi
 UP=$(. $BIN_PATH/do_status.sh)
 if [[ $UP == 0 ]]; then
     dialog --infobox "Dashboard already shut down." 3 40
+    echo "Dashboard already shut down."
     exit 1
 fi
 
@@ -17,12 +18,8 @@ dialog --yesno "Are you sure you want to shut down the IFCB dashboard?" 10 30
 
 if [[ $? == 0 ]]; then
     . $BIN_PATH/do_shutdown.sh | dialog --progressbox "Stopping services" 10 50
-    while [ 1 ]; do
-	UP=$(. $BIN_PATH/do_status.sh)
-	if [[ $UP == 0 ]]; then break; fi
-	dialog --infobox "Waiting for services to shut down ..." 3 45
-	sleep 1
-    done
+    . $BIN_PATH/do_wait.sh down | dialog --progressbox "Waiting for services to shut down ..." 4 45
     dialog --infobox "Dashboard shut down." 3 30
+    echo "Dashboard shut down."
 fi
 
