@@ -7,20 +7,36 @@ fi
 
 HEIGHT=10
 WIDTH=50
+HW="$HEIGHT $WIDTH"
 
 function cancel {
-    dialog --infobox "Canceled." $HEIGHT $WIDTH
+    # indicate that the user has canceled
+    dialog --infobox "Canceled." $HW
     exit 1
 }
 
 function test_retval {
+    # cancel if return value is non-zero
     if (($? > 0)); then
 	cancel
     fi
+    return $?
+}
+
+function dialog_input() {
+    # given a variable name and params to "dialog",
+    # call the dialog function and save its stderr
+    # output to the variable
+    local tmpfile=$(mktemp)
+    dialog "${@:2}" 2> $tmpfile
+    test_retval
+    eval "$1=$(< $tmpfile)"
+    rm $tmpfile
 }
 
 sharehost=""
 
+# marker comment in fstab file
 MARKER_REGEX='IFCB dashboard .* mount'
 HOST_DESCRIPTION_IFCB=IFCB
 HOST_DESCRIPTION_SERVER=server
@@ -29,11 +45,11 @@ FSTAB=/etc/fstab
 
 grep "\bcifs\b" /etc/fstab | grep -v "$MARKER_REGEX" >.existing_shares
 if [[ $? == 0 ]]; then
-    dialog --yesno "Existing share(s) found. Do you want to keep them?" $HEIGHT $WIDTH
+    dialog --yesno "Existing share(s) found. Do you want to keep them?" $HW
     if [[ $? == 0 ]]; then
 	while read line; do
 	    sharepath=$(echo $line | awk '{print $1}')
-	    dialog --yes-label "Data" --no-label "IFCB" --yesno "What kind of share is $sharepath?\n\n'Data' means your computer's hard drive\n'IFCB' means your IFCB's hard drive" $HEIGHT $WIDTH
+	    dialog --yes-label "Data" --no-label "IFCB" --yesno "What kind of share is $sharepath?\n\n'Data' means your computer's hard drive\n'IFCB' means your IFCB's hard drive" $HW
 	    if [[ $? == 0 ]]; then
 		HOST_DESCRIPTION=$HOST_DESCRIPTION_SERVER
 	    else
@@ -48,8 +64,7 @@ if [[ $? == 0 ]]; then
     fi
 fi
 
-dialog --yes-label "Computer" --no-label "IFCB" --yesno "What kind of share do you want to configure?" $HEIGHT $WIDTH
-
+dialog --yes-label "Computer" --no-label "IFCB" --yesno "What kind of share do you want to configure?" $HW
 if [[ $? == 0 ]]; then
     HOST_DESCRIPTION=$HOST_DESCRIPTION_SERVER
 else
@@ -59,8 +74,8 @@ MARKER="# IFCB dashboard $HOST_DESCRIPTION mount"
 
 fgrep -q "$MARKER" $FSTAB
 if [[ $? == 0 ]]; then
-    dialog --yesno "This will unmount and replace your existing $HOST_DESCRIPTION mount. Do you want to continue?" $HEIGHT $WIDTH
-    if [[ $? != 0 ]]; then cancel; fi
+    dialog --yesno "This will unmount and replace your existing $HOST_DESCRIPTION mount. Do you want to continue?" $HW
+    test_retval
 fi
 
 if [[ $HOST_DESCRIPTION = $HOST_DESCRIPTION_IFCB ]]; then
@@ -73,30 +88,21 @@ else
     DEFAULT_MOUNT_POINT=/mnt/ifcb_data
 fi
 
-dialog --title "Share configuration" --clear --inputbox "Name or IP address of $HOST_DESCRIPTION\nexample: $HOST_EXAMPLE" $HEIGHT $WIDTH $sharehost \
-        2>.sharehost
-test_retval
-sharehost=$(cat .sharehost)
+dialog_input sharehost --title "Share configuration" --clear --inputbox "Name or IP address of $HOST_DESCRIPTION\nexample: $HOST_EXAMPLE" $HW $sharehost
 
-dialog --title "Share configuration" --clear --inputbox "Username to connect to $HOST_DESCRIPTION" $HEIGHT $WIDTH 2>.shareuser
-test_retval
-shareuser=$(cat .shareuser)
+dialog_input shareuser --title "Share configuration" --clear --inputbox "Username to connect to $HOST_DESCRIPTION" $HW
 
-dialog --title "Share configuration" --clear --inputbox "Password to connect to $HOST_DESCRIPTION" $HEIGHT $WIDTH 2>.sharepwd
-test_retval
-sharepwd=$(cat .sharepwd)
+dialog_input sharepwd --title "Share configuration" --clear --insecure --passwordbox "Password to connect to $HOST_DESCRIPTION" $HW
 
 cat > $CREDENTIALS_FILE <<EOF
 username=$shareuser
 password=$sharepwd
 EOF
 
-rm .sharehost .shareuser .sharepwd
-
 if [[ $HOST_DESCRIPTION = IFCB ]]; then
     share=data
 else
-    dialog --infobox "Connecting to $sharehost ..." $HEIGHT $WIDTH
+    dialog --infobox "Connecting to $sharehost ..." $HW
 
     smbclient -L $sharehost -A $CREDENTIALS_FILE -g 2>/dev/null >.smbclient
 
@@ -105,26 +111,22 @@ else
 	exec sudo bash $0 $1
     fi
 
-    sed -n -e '/^Disk/s/Disk|\(.*\)|.*/\1/p' .smbclient > .sharelist 2>/dev/null
-    count=$(wc -l .sharelist | sed -e 's/ .*//')
+    sharelist=$(mktemp)
 
-    dialog --title "Share configuration" --clear --menu "Select a share" 16 30 $count $(cat -n .sharelist) 2>.sharechoice
-    test_retval
-    sharechoice=$(cat .sharechoice)
+    sed -n -e '/^Disk/s/Disk|\(.*\)|.*/\1/p' .smbclient > $sharelist 2>/dev/null
+    count=$(wc -l $sharelist | sed -e 's/ .*//')
 
-    share=$(sed -e "$sharechoice!d" .sharelist)
+    dialog_input sharechoice --title "Share configuration" --clear --menu "Select a share" 16 30 $count $(cat -n $sharelist)
+
+    share=$(sed -e "$sharechoice!d" $sharelist)
+
+    rm $sharelist
 fi
 
-rm .smbclient .sharelist .sharechoice
-
 while [[ ! "$sharemp" =~ ^/[^\ ]+$  ]]; do
-    dialog --title "Share configuration" --clear --inputbox "Mount point$msg" $HEIGHT $WIDTH "$DEFAULT_MOUNT_POINT" 2>.sharemp
-    test_retval
-    sharemp=$(cat .sharemp)
+    dialog_input sharemp --title "Share configuration" --clear --inputbox "Mount point$msg" $HW "$DEFAULT_MOUNT_POINT"
     msg="\nInvalid path: $sharemp"
 done
-
-rm .sharemp
 
 # now perform the mount
 
@@ -162,4 +164,3 @@ if [[ ! $? == 0 ]]; then
 fi    
 
 dialog --title "Success" --infobox "Mounted share" 4 40
-
