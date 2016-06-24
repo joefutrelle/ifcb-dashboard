@@ -1,0 +1,24 @@
+#!/bin/bash
+
+BIN_PATH=/vagrant/bin/do
+
+# if not root, re-execute using sudo
+if [[ $(id -u) -ne 0 ]] ; then
+    exec sudo bash $0
+fi
+
+UP=$(. $BIN_PATH/do_status.sh)
+if [[ $UP != 0 ]]; then
+    dialog --yesno "Are you sure you want to restart the IFCB dashboard?" 10 40
+    if [[ $? == 1 ]]; then
+	exit 1
+    fi
+    . $BIN_PATH/do_shutdown.sh | dialog --progressbox "Stopping services" 10 50
+    . $BIN_PATH/do_wait.sh down | dialog --progressbox "Waiting for services to shut down ..." 4 45
+fi
+
+. $BIN_PATH/do_startup.sh | dialog --progressbox "Starting services" 10 50
+. $BIN_PATH/do_wait.sh up | dialog --progressbox "Waiting for services to start ..." 4 45
+
+dialog --infobox "Dashboard started." 3 30
+echo "Dashboard started."

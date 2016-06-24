@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
 sudo apt-get update
 
 # utilities
-sudo apt-get install -y aptitude git curl python-pip python-dev cifs-utils smbclient libffi-dev
+sudo apt-get install -y aptitude git curl python-pip python-dev cifs-utils smbclient libffi-dev dialog
 
 # apache, flask, wsgi
 sudo apt-get install -y apache2 python-flask libapache2-mod-wsgi
@@ -54,5 +54,6 @@ sudo service supervisor restart
 
 SHELL
 config.vm.provision :shell, :inline => "sudo supervisorctl restart all", run: "always"
+config.vm.provision :shell, :inline => "echo 'export PATH=$PATH:/vagrant/bin' >> /home/vagrant/.bashrc", run: "always"
 end
 
