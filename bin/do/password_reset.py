@@ -12,16 +12,19 @@ if __name__=='__main__':
         password = sys.argv[1]
     except IndexError:
         password = gen_id()[:8]
-    user = session.query(User).filter_by(email='admin@whoi.edu').first()
+    try:
+        email = sys.argv[2]
+    except IndexError:
+        email = 'admin@whoi.edu'
+    user = session.query(User).filter_by(email=email).first()
     if user is not None:
         session.delete(user)
         session.commit()
-    username = 'admin@whoi.edu'
     u = User(
         first_name='Admin',
         last_name='User',
-        email=username,
-        username=username,
+        email=email,
+        username=email,
         password=user_manager.hash_password(password),
         is_enabled=True
     )
@@ -29,5 +32,5 @@ if __name__=='__main__':
     u.roles.append(r)
     session.add(u)
     session.commit()
-    print "%s|%s" % (username, password)
+    print "%s|%s" % (email, password)
 
