@@ -55,6 +55,6 @@ sudo service supervisor restart
 
 SHELL
 config.vm.provision :shell, :inline => "sudo supervisorctl restart all", run: "always"
-config.vm.provision :shell, :inline => "echo 'export PATH=$PATH:/vagrant/bin' >> /home/vagrant/.bashrc", run: "always"
+config.vm.provision :shell, :inline => "if [ $(fgrep -c /vagrant/bin /home/vagrant/.bashrc) -eq 0 ]; then echo 'export PATH=$PATH:/vagrant/bin' >> /home/vagrant/.bashrc; fi", run: "always"
 end
 
