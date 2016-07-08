@@ -61,6 +61,8 @@ if [[ $? == 0 ]]; then
 	    echo $NEW_FSTAB > $FSTAB
 	    echo "$line $MARKER" >> $FSTAB
 	done < .existing_shares
+	dialog --defaultno --yesno "Do you still want to reconfigure your share(s)?" $HW
+	test_retval
     fi
 fi
 
