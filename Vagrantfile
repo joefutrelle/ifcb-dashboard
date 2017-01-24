@@ -17,7 +17,7 @@ sudo pip install flask-user flask-restless flask-wtf mimerender bcrypt
 
 # various python incl numpy/scipy
 sudo apt-get install -y python-lxml python-imaging
-sudo apt-get install -y python-numpy python-scipy python-skimage python-sklearn
+sudo apt-get install -y python-numpy python-scipy python-skimage python-sklearn python-pandas
 sudo pip install jdcal
 
 # rabbit / celery / supervisor
