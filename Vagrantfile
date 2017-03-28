@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
 sudo apt-get update
 
 # utilities
-sudo apt-get install -y aptitude emacs24-nox git curl python-pip python-dev cifs-utils libffi-dev
+sudo apt-get install -y aptitude git curl python-pip python-dev cifs-utils smbclient libffi-dev dialog
 
 # apache, flask, wsgi
 sudo apt-get install -y apache2 python-flask libapache2-mod-wsgi
@@ -17,7 +17,8 @@ sudo pip install flask-user flask-restless flask-wtf mimerender bcrypt
 
 # various python incl numpy/scipy
 sudo apt-get install -y python-requests python-lxml python-imaging
-sudo apt-get install -y python-numpy python-scipy python-skimage python-sklearn
+sudo apt-get install -y python-numpy python-scipy python-skimage python-sklearn python-pandas
+sudo pip install jdcal
 
 # rabbit / celery / supervisor
 sudo apt-get install -y rabbitmq-server python-celery python-celery-common supervisor
@@ -56,8 +57,7 @@ sudo cp /vagrant/dashboard_workers.conf /etc/supervisor/conf.d
 sudo service supervisor restart
 
 SHELL
-config.vm.provision :shell, run: "always", inline: <<-SHELL
-sudo service supervisor restart
-SHELL
+config.vm.provision :shell, :inline => "sudo supervisorctl restart all", run: "always"
+config.vm.provision :shell, :inline => "if [ $(fgrep -c /vagrant/bin /home/vagrant/.bashrc) -eq 0 ]; then echo 'export PATH=$PATH:/vagrant/bin' >> /home/vagrant/.bashrc; fi", run: "always"
 end
 
