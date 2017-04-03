@@ -38,7 +38,7 @@ echo "Listen 8888" >> /etc/apache2/ports.conf
 EOF
 
 cd /home/vagrant/ifcb-dashboard
-cp dashbaord_conf.py.example dashboard_conf.py
+cp dashboard_conf.py.example dashboard_conf.py
 
 sudo cp dashboard_site.conf workflow_site.conf /etc/apache2/sites-available
 sudo a2ensite dashboard_site
