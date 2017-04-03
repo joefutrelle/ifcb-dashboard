@@ -1,6 +1,6 @@
 import sys
 
-sys.path.insert(0,'/vagrant')
+sys.path.insert(0,'/home/vagrant/ifcb-dashboard')
 
 from dashboard_conf import ASYNC_CONFIG_MODULE, WORKFLOW_DATABASE_URL
 
