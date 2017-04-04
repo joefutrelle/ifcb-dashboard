@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BIN_PATH=/vagrant/bin/do
+BIN_PATH=/home/vagrant/ifcb-dashboard/bin/do
 
 if [[ $1 == "up" ]]; then
     SUCCESS=3

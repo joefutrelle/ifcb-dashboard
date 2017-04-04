@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BIN_PATH=/vagrant/bin/do
+BIN_PATH=/home/vagrant/ifcb-dashboard/bin/do
 
 # if not root, re-execute using sudo
 if [[ $(id -u) -ne 0 ]] ; then

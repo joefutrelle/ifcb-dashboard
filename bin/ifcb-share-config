@@ -81,11 +81,11 @@ if [[ $? == 0 ]]; then
 fi
 
 if [[ $HOST_DESCRIPTION = $HOST_DESCRIPTION_IFCB ]]; then
-    CREDENTIALS_FILE=/vagrant/.ifcb_share_credentials
+    CREDENTIALS_FILE=/home/vagrant/.ifcb_share_credentials
     HOST_EXAMPLE=192.168.1.23
     DEFAULT_MOUNT_POINT=/mnt/ifcb
 else
-    CREDENTIALS_FILE=/vagrant/.data_share_credentials
+    CREDENTIALS_FILE=/home/vagrant/.data_share_credentials
     HOST_EXAMPLE=myserver.somewhere.edu
     DEFAULT_MOUNT_POINT=/mnt/ifcb_data
 fi
