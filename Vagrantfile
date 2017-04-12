@@ -3,7 +3,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.memory="2048"
   end
-  config.vm.network :forwarded_port, host: 8888, guest: 8888
+  config.vm.network :forwarded_port, host_ip: "127.0.0.1", host: 8888, guest: 8888
   config.vm.provision :shell, inline: <<-SHELL
 sudo apt-get update
 
