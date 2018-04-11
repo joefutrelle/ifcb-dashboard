@@ -13,7 +13,7 @@ sudo apt-get install -y aptitude git curl python-pip python-dev cifs-utils smbcl
 # apache, flask, wsgi
 sudo apt-get install -y apache2 python-flask libapache2-mod-wsgi
 sudo apt-get install -y python-flask python-flask-login
-sudo pip install flask-user flask-restless flask-wtf mimerender bcrypt
+sudo pip install "flask-user<0.7" flask-restless flask-wtf mimerender bcrypt
 
 # various python incl numpy/scipy
 sudo apt-get install -y python-requests python-lxml python-imaging
@@ -39,6 +39,10 @@ sudo echo "host ifcb ifcb 10.0.2.2/16 md5" >> /etc/postgresql/9.5/main/pg_hba.co
 sudo echo "host workflow ifcb 10.0.2.2/16 md5" >> /etc/postgresql/9.5/main/pg_hba.conf
 # restart postgres
 sudo service postgresql restart
+
+# fix python requests
+sudo apt-get install -y libssl-dev
+sudo python -m easy_install --upgrade pyOpenSSL
 
 # configure apache and dashboard
 sudo -s <<EOF
